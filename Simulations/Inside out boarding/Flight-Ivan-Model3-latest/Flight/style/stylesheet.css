@@ -1,0 +1,49 @@
+
+html{
+  height:100%;
+}
+
+body{
+  height:100%;
+  margin:0;
+}
+
+
+#surface{
+  /* background-color: #F3EBDD; */
+  background-color: #FCFDFE;
+}
+
+#title{
+    position: absolute;
+    bottom:0;
+    left:0;
+    margin: 10px;
+    color: #506D2F;
+    font-weight: bold;
+}
+
+#credits{
+  position:absolute;
+  bottom:0;
+  right:0;
+  margin: 10px;
+  color: #506D2F;
+  font-weight: bold;
+}
+
+#controls{
+  position:absolute;
+  bottom:10px;
+  left:40%;
+  color: #506D2F;
+  font-weight: bold;
+}
+
+.bgColor0 { background-color: #7D5642; }
+.bgColor1 { background-color: #867666; }
+.bgColor2 { background-color: #78D9B7; }
+.bgColor3 { background-color: #DAFFF2; }
+.bgColor4 { background-color: #E5B4FF; }
+.bgColor5 { background-color: #B778D9; }
+.bgColor6 { background-color: #FCFDFE; }

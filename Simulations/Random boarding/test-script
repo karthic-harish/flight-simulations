@@ -1,0 +1,724 @@
+var left_wing = [];
+var right_wing = [];
+var aisle = [];
+var x = 0;
+var y = 0;
+var z = 0;
+
+for (var j = 8; j < 11; j++) {
+ for (var i = 6; i < 36; i++) {
+  left_wing[x] = {"location": {"row":j,"col":i}, "id":x+1, "occupied": 0};
+  x += 1
+ };
+};
+
+
+function randomSeat(obj){
+    var keys = Object.keys(obj)
+    return obj[keys[ keys.length * Math.random() << 0]];
+};
+
+
+//console.log(randomSeat(left_wing));
+
+for (var i = 4; i < 36; i++){
+ aisle[z] = {"location": {"row":11,"col":i}, "occupied": 0}
+ z+=1
+};
+
+//console.log(aisle);
+
+
+
+var N = 180;
+var seatlist = Array.apply(null, {length: N}).map(Number.call, Number);
+//console.log(seatlist);
+
+var vendors = [
+    {Name: 'Magenic',
+      ID: 'ABC'
+     },
+    {Name: 'Microsoft',
+      ID: 'DEF'
+    }
+];
+
+var v = vendors.filter(function(vendor){ return vendor.Name === "Magenic" });
+
+vendors[0].ID = 1
+
+//console.log(vendors);
+var z = 0;
+var aisle=[];
+for (var i = 3; i < 36; i++){
+ aisle[z] = {"location": {"row":11,"col":i}, "occupied": 0}
+ z+=1
+};
+
+//console.log(aisle[0].occupied);
+
+var midmovetime = 20; // middle == AISLE occupied
+var windowmovetime1 = 20; // window == AISLE occupied
+var windowmovetime2 = 30; // window == MIDDLE occupied
+var windowmovetime3 = 50; // window == AISLE + MIDDLE occupied
+var bagtime = 10; // stow baggage
+
+
+switch (state) {
+  case UNSEATED:
+    if (hasArrivedAisle){
+      seatsOccupied[col].push(passenger.target.row); // update seatsOccupied dictionary
+      if (passenger.luggage==0) { // NO LUGGAGE
+        if (passenger.target.row-row==1) { // left wing AISLE seat, no luggage
+          passenger.location.col = col;
+          passenger.location.row = row+1;
+          currentAisleOccupied.occupied = 0;
+          passenger.state = SEATED;
+
+        }
+
+        else if (passenger.target.row-row==-1) { // right wing AISLE seat, no luggage
+          passenger.location.col = col;
+          passenger.location.row = row-1;
+          currentAisleOccupied.occupied = 0;
+          passenger.state = SEATED;
+
+        }
+
+        else if (passenger.target.row-row==2) { //right wing, MIDDLE seat, no luggage
+          if (seatsOccupied[col].includes(12)) { // no luggage, BLOCKED by AISLE seat
+            passenger.seatmovecount+=1;
+
+            if (passenger.seatmovecount==midmovetime+1) { // WAITS  for movement in/out
+              passenger.location.row = row+1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+            }
+          }
+          else {
+            passenger.location.row = row+1;
+            passenger.location.col = col;
+            passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+          }
+        }
+
+        else if (passenger.target.row-row==-2) { //left wing, middle seat, no luggage
+          if (seatsOccupied[col].includes(10)) { // no luggage, blocked by aisle seat
+            passenger.seatmovecount+=1;
+
+            if (passenger.seatmovecount==midmovetime+1) { // WAITS  for movement in/out
+              passenger.location.row = row-1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+            }
+          }
+          else {
+            passenger.location.row = row-1;
+            passenger.location.col = col;
+            passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+          }
+        }
+
+        else if (passenger.target.row-row==3) { //right wing, window seat, no luggage
+          if (seatsOccupied[col].includes(12)) { // no luggage, BLOCK by AISLE seat
+            if (seatsOccupied[col].includes(13)) { // BLOCK by MIDDLE also
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime3+1) { // WAITS  for movement in/out
+                passenger.location.row = row+1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+
+            }
+
+            else { // only AISLE
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime1+1) { // WAITS  for movement in/out
+                passenger.location.row = row+1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+            }
+
+          }
+          else { // no luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(13)) { // no luggage, BLOCK by MIDDLE only
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime2+1) { // WAITS  for movement in/out
+                passenger.location.row = row+1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+            }
+            else { // no luggage, not blocked by middle or aisle
+              passenger.location.row = row+1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+            }
+          }
+        }
+
+        else if (passenger.target.row-row==-3) { //left wing, window seat, no luggage
+          if (seatsOccupied[col].includes(10)) { // no luggage, blocked by aisle seat
+            if (seatsOccupied[col].includes(9)) { // blocked by middle also
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime3+1) { // WAITS  for movement in/out
+                passenger.location.row = row-1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+            }
+
+            else { // only AISLE
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime1+1) { // WAITS  for movement in/out
+                passenger.location.row = row-1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+            }
+
+          }
+          else { // no luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(9)) { // no luggage, blocked by middle only
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==windowmovetime2+1) { // WAITS  for movement in/out
+                passenger.location.row = row-1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+              }
+            }
+            else { // no luggage, not blocked by middle or aisle
+              passenger.location.row = row-1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+            }
+          }
+        }
+
+      }// end of NO LUGGAGE loop
+
+      if (passenger.luggage==1) { // LUGGAGE
+        passenger.bagwaitcount+=1; // make em wait 30 seconds
+
+        if (passenger.bagwaitcount==bagtime) {
+          if (passenger.target.row-row==1) { // left wing AISLE seat, luggage
+            passenger.location.col = col;
+            passenger.location.row = row+1;
+            currentAisleOccupied.occupied = 0;
+            passenger.state = SEATED;
+
+          }
+
+          else if (passenger.target.row-row==-1) { // right wing AISLE seat, luggage
+            passenger.location.col = col;
+            passenger.location.row = row-1;
+            currentAisleOccupied.occupied = 0;
+            passenger.state = SEATED;
+
+          }
+
+          else if (passenger.target.row-row==2) { //right wing, MIDDLE seat, no luggage
+            if (seatsOccupied[col].includes(12)) { // luggage, BLOCKED by AISLE seat
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==midmovetime+1) { // WAITS  for movement in/out
+                passenger.location.row = row+1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+              }
+            }
+            else {
+              passenger.location.row = row+1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+            }
+          }
+
+          else if (passenger.target.row-row==-2) { //left wing, middle seat, no luggage
+            if (seatsOccupied[col].includes(10)) { // luggage, blocked by aisle seat
+              passenger.seatmovecount+=1;
+
+              if (passenger.seatmovecount==midmovetime+1) { // WAITS  for movement in/out
+                passenger.location.row = row-1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //WAITING, when no blockage for MIDDLE seat
+              }
+            }
+            else {
+              passenger.location.row = row-1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+            }
+          }
+
+          else if (passenger.target.row-row==3) { //right wing, window seat, no luggage
+            if (seatsOccupied[col].includes(12)) { // luggage, BLOCK by AISLE seat
+              if (seatsOccupied[col].includes(13)) { // BLOCK by MIDDLE also
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime3+1) { // WAITS  for movement in/out
+                  passenger.location.row = row+1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+
+              }
+
+              else { // only AISLE
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime1+1) { // WAITS  for movement in/out
+                  passenger.location.row = row+1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+              }
+
+            }
+            else { // LUGGAGE, not blocked by aisle seat
+              if (seatsOccupied[col].includes(13)) { // luggage, BLOCK by MIDDLE only
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime2+1) { // WAITS  for movement in/out
+                  passenger.location.row = row+1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+              }
+              else { // LUGGAGE, not blocked by middle or aisle
+                passenger.location.row = row+1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+              }
+            }
+          }
+
+          else if (passenger.target.row-row==-3) { //left wing, window seat, luggage
+            if (seatsOccupied[col].includes(10)) { // no luggage, blocked by aisle seat
+              if (seatsOccupied[col].includes(9)) { // blocked by middle also
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime3+1) { // WAITS  for movement in/out
+                  passenger.location.row = row-1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+              }
+
+              else { // only AISLE
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime1+1) { // WAITS  for movement in/out
+                  passenger.location.row = row-1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+              }
+
+            }
+            else { // LUGGAGE, not blocked by aisle seat
+              if (seatsOccupied[col].includes(9)) { // no luggage, blocked by middle only
+                passenger.seatmovecount+=1;
+
+                if (passenger.seatmovecount==windowmovetime2+1) { // WAITS  for movement in/out
+                  passenger.location.row = row-1;
+                  passenger.location.col = col;
+                  passenger.state = WAITING; //WAITING, when no blockage for WINDOW seat
+                }
+              }
+              else { // LUGGAGE, not blocked by middle or aisle
+                passenger.location.row = row-1;
+                passenger.location.col = col;
+                passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+              }
+            }
+          }
+        }
+      }// end of LUGGAGE loop
+
+  }
+    else if (nextAisleOccupied.occupied==0) { // havent reached AISLE
+      currentAisleOccupied.occupied = 0;
+      nextAisleOccupied.occupied = 1;
+      passenger.location.col = col + 1;
+      passenger.location.row = row;
+  }
+    break;
+
+  case WAITING:
+
+    if (Math.abs(passenger.target.row - row) == 1) { // MIDDLE seat
+      passenger.location.row = row + passenger.target.row - row;
+      passenger.location.col = col;
+      currentAisleOccupied.occupied = 0;
+      passenger.state = SEATED;
+    }
+
+    else if (Math.abs(passenger.target.row - row) == 2) { // WINDOW seat
+      passenger.location.row = row + passenger.target.row - row;
+      passenger.location.col = col;
+      passenger.state = WAITING;
+    }
+
+    break;
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+
+// PRESERVED CODE
+
+switch(state){
+  case UNSEATED:
+    if (hasArrivedAisle){
+      seatsOccupied[col].push(passenger.target.row); // update seatsOccupied dictionary
+      if (passenger.luggage==0) { //no luggage
+
+        if (passenger.target.row-row==1) { // right wing aisle seat, no luggage
+          passenger.location.col = col;
+          passenger.location.row = row+1;
+          currentAisleOccupied.occupied = 0;
+          passenger.state = SEATED;
+
+        }
+
+        else if (passenger.target.row-row==-1) { // left wing aisle seat, no luggage
+          passenger.location.col = col;
+          passenger.location.row = row-1;
+          currentAisleOccupied.occupied = 0;
+          passenger.state = SEATED;
+
+        }
+
+        else if (passenger.target.row-row==2) { //right wing, middle seat, no luggage
+          if (seatsOccupied[col].includes(12)) { // no luggage, blocked by aisle seat
+            passenger.state = B;
+          }
+          else {
+            passenger.location.row = row+1;
+            passenger.location.col = col;
+            passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+          }
+        }
+
+        else if (passenger.target.row-row==-2) { //left wing, middle seat, no luggage
+          if (seatsOccupied[col].includes(10)) { // no luggage, blocked by aisle seat
+            passenger.state = B;
+          }
+          else {
+            passenger.location.row = row-1;
+            passenger.location.col = col;
+            passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+          }
+        }
+
+        else if (passenger.target.row-row==3) { //right wing, window seat, no luggage
+          if (seatsOccupied[col].includes(12)) { // no luggage, blocked by aisle seat
+            if (seatsOccupied[col].includes(13)) { // blocked by middle also
+              passenger.state = E;
+            }
+
+            else { // not blocked by middle also (only aisle)
+              passenger.state = C;
+            }
+
+          }
+          else { // no luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(13)) { // no luggage, blocked by middle only
+              passenger.state = D;
+            }
+            else { // no luggage, not blocked by middle or aisle
+              passenger.location.row = row+1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+            }
+          }
+        }
+
+        else if (passenger.target.row-row==-3) { //left wing, window seat, no luggage
+          if (10 in seatsOccupied[col]) { // no luggage, blocked by aisle seat
+            if (9 in seatsOccupied[col]) { // blocked by middle also
+              passenger.state = E;
+            }
+
+            else { // not blocked by middle also (only aisle)
+              passenger.state = C;
+            }
+
+          }
+          else { // no luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(9)) { // no luggage, blocked by middle only
+              passenger.state = D;
+            }
+            else { // no luggage, not blocked by middle or aisle
+              passenger.location.row = row-1;
+              passenger.location.col = col;
+              passenger.state = WAITING; //TBC what to do when no blockage, middle seat???
+            }
+          }
+        }
+      } // end of no luggage loop
+
+
+      else if (passenger.luggage==1) { // have luggage
+
+        if (passenger.target.row-row==1) { // right wing aisle seat, have luggage
+          passenger.state = A; //wait for 1 iteration
+        }
+
+        else if (passenger.target.row-row==-1) { // left wing aisle seat, have luggage
+          passenger.state = A;
+        }
+
+        else if (passenger.target.row-row==2) { //right wing, middle seat, have luggage
+          if (seatsOccupied[col].includes(12)) { // have luggage, blocked by aisle seat
+            passenger.state = C;
+          }
+          else {
+            passenger.state = A; //have luggage, no blockage by aisle seat
+          }
+        }
+
+        else if (passenger.target.row-row==-2) { //left wing, middle seat, have luggage
+          if (seatsOccupied[col].includes(10)) { // have luggage, blocked by aisle seat
+            passenger.state = C;
+          }
+          else {
+            passenger.state = A; //have luggage, no blockage by aisle seat
+          }
+        }
+
+        else if (passenger.target.row-row==3) { //right wing, window seat, have luggage
+          if (seatsOccupied[col].includes(12)) { // have luggage, blocked by aisle seat
+            if (seatsOccupied[col].includes(13)) { // blocked by middle also
+              passenger.state = F;
+            }
+
+            else { // have luggage, not blocked by middle also (only aisle)
+              passenger.state = D;
+            }
+
+          }
+          else { // have luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(13)) { // have luggage, blocked by middle only
+              passenger.state = D;
+            }
+            else { // have luggage, not blocked by middle or aisle
+              passenger.state = A;
+            }
+          }
+        }
+
+        else if (passenger.target.row-row==-3) { //left wing, window seat, have luggage
+          if (seatsOccupied[col].includes(10)) { // have luggage, blocked by aisle seat
+            if (seatsOccupied[col].includes(9)) { // blocked by middle also
+              passenger.state = F;
+            }
+
+            else { // have luggage, not blocked by middle also (only aisle)
+              passenger.state = D;
+            }
+
+          }
+          else { // have luggage, not blocked by aisle seat
+            if (seatsOccupied[col].includes(9)) { // have luggage, blocked by middle only
+              passenger.state = D;
+            }
+            else { // have luggage, not blocked by middle or aisle
+              passenger.state = A;
+            }
+          }
+        }
+      } // end of luggage loop
+ }
+
+ else if (nextAisleOccupied.occupied==0) { // move straight if not arrived at aisle
+  currentAisleOccupied.occupied = 0;
+  nextAisleOccupied.occupied = 1;
+  passenger.location.col = col + 1;
+  passenger.location.row = row;
+
+ }
+
+  else { // ignore
+  }
+
+  break;
+
+case WAITING: // inside seat row
+
+if (passenger.target.row - row == 1) { //left wing, middle seat
+  passenger.location.row = row + 1;
+  passenger.location.col = col;
+  currentAisleOccupied.occupied = 0;
+  passenger.state = SEATED;
+
+}
+
+else if (passenger.target.row - row == -1) { //right wing, middle seat
+  passenger.location.row = row - 1;
+  passenger.location.col = col;
+  currentAisleOccupied.occupied = 0;
+  passenger.state = SEATED;
+
+}
+
+else if (passenger.target.row - row == 2) { //left wing, window seat
+  passenger.location.row = row + 1;
+  passenger.location.col = col;
+  passenger.state = WAITING;
+}
+
+else if (passenger.target.row - row == -2) { //right wing, window seat
+  passenger.location.row = row - 1;
+  passenger.location.col = col;
+  passenger.state = WAITING;
+}
+
+ break;
+
+case F:
+passenger.location.row = row;
+passenger.location.col = col;
+passenger.state = E;
+break;
+
+case E:
+  passenger.location.row = row;
+  passenger.location.col = col;
+  passenger.state = D;
+  break;
+
+case D:
+  passenger.location.row = row;
+  passenger.location.col = col;
+  passenger.state = C;
+  break;
+
+case C:
+  passenger.location.row = row;
+  passenger.location.col = col;
+  passenger.state = B;
+  break;
+
+case B:
+  passenger.location.row = row;
+  passenger.location.col = col;
+  passenger.state = A;
+  break;
+
+case A:
+  //currentAisleOccupied.occupied = 0;
+
+  if (passenger.target.row - row == 1) {
+    passenger.location.row = row + 1;
+    passenger.state = SEATED;
+    currentAisleOccupied.occupied = 0;
+
+  }
+
+  else if (passenger.target.row - row == -1) {
+    passenger.location.row = row - 1;
+    passenger.state = SEATED;
+    currentAisleOccupied.occupied = 0;
+
+  }
+
+  else if (passenger.target.row - row == 2 || passenger.target.row - row == 3) {
+    passenger.location.row = row + 1;
+    passenger.state = A;
+  }
+
+  else if (passenger.target.row - row == -2 || passenger.target.row - row == -3) {
+    passenger.location.row = row - 1;
+    passenger.state = A;
+  }
+
+  //if (passenger.location.row != 11) {
+  //  currentAisleOccupied.occupied = 0;
+  //}
+
+  break;
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+
+var left_front_wing = [];
+var left_middle_wing = [];
+var left_back_wing = []:
+
+var right_front_wing = [];
+var right_middle_wing = [];
+var right_back_wing = [];
+var aisle = [];
+
+var x = 0;
+var y = 0;
+var z = 0;
+
+for (var j = 8; j < 11; j++) {
+ for (var i = 6; i < 16; i++) {
+  left_front_wing[x] = {"location": {"row":j,"col":i}, "occupied": 0};
+  x += 1
+ };
+};
+
+for (var j = 8; j < 11; j++) {
+ for (var i = 16; i < 26; i++) {
+  left_middle_wing[x] = {"location": {"row":j,"col":i}, "occupied": 0};
+  x += 1
+ };
+};
+
+for (var j = 8; j < 11; j++) {
+ for (var i = 26; i < 36; i++) {
+  left_back_wing[x] = {"location": {"row":j,"col":i}, "occupied": 0};
+  x += 1
+ };
+};
+//console.log(left_wing);
+
+for (var j = 12; j < 15; j++) {
+ for (var i = 6; i < 16; i++) {
+  right_front_wing[y] = {"location": {"row":j,"col":i}, "occupied": 0};
+  y += 1
+ };
+};
+
+for (var j = 12; j < 15; j++) {
+ for (var i = 16; i < 26; i++) {
+  right_middle_wing[y] = {"location": {"row":j,"col":i}, "occupied": 0};
+  y += 1
+ };
+};
+
+for (var j = 12; j < 15; j++) {
+ for (var i = 26; i < 36; i++) {
+  right_back_wing[y] = {"location": {"row":j,"col":i}, "occupied": 0};
+  y += 1
+ };
+};
+
+for (var i = 4; i < 36; i++){
+ aisle[z] = {"location": {"row":11,"col":i}, "occupied": 0}
+ z+=1
+};
+
+
+var allfrontseats = left_front_wing.concat(right_front_wing);
+var allmiddleseats = left_middle_wing.concat(right_middle_wing);
+var allbackseats = left_back_wing.concat(right_back_wing);
+
+
+
+var allseatscopy = allfrontseats.concat(allmiddleseats, allbackseats);
