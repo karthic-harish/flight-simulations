@@ -23,6 +23,8 @@ Parameters will be estimated from research papers based on real-life observation
 │   │   ├── img
 │   │   ├── style
 │   │   ├── test-script
+│
+├── flight-simulation-tour.pdf
 ```
 
 Open **FlightModel.html** to run simulation
@@ -30,7 +32,7 @@ JS code resides in the **lib** folder
 
 Please read all the content in the **Project Info** folder to fully understand the project
 
-Else, **flight-simulation-tour.pdf is a walkthrough of the code**
+Else, check out **flight-simulation-tour.pdf** for a walkthrough of the code
 
 ## What's next
 
