@@ -13,6 +13,7 @@ Parameters will be estimated from research papers based on real-life observation
 
 ## How to use this? 
 
+```
 ├── Simulations
 │   ├── Back to front boarding
 │   ├── Inside out boarding
@@ -22,7 +23,7 @@ Parameters will be estimated from research papers based on real-life observation
 │   │   ├── img
 │   │   ├── style
 │   │   ├── test-script
-
+```
 
 Open **FlightModel.html** to run simulation
 JS code resides in the **lib** folder
